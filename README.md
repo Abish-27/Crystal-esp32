@@ -2,7 +2,7 @@
 
 [![Checks](https://github.com/Abish-27/Crystal-esp32/actions/workflows/ci.yml/badge.svg)](https://github.com/Abish-27/Crystal-esp32/actions/workflows/ci.yml)
 
-An experiment by [Abish Kulkarni](https://github.com/Abish-27): turning a Hack the North 2026 badge into a standalone Game Boy Color handheld, with full-screen graphics, persistent saves, and game-driven RGB LEDs.
+An experiment by turning a Hack the North 2026 badge into a standalone Game Boy Color handheld, with full-screen graphics, persistent saves, and game-driven RGB LEDs.
 
 <p align="center">
   <img src="docs/images/badge-battle.png" width="480" alt="Pokémon Crystal battle running on the physical Hack the North ESP32-C3 badge">
