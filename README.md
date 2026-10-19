@@ -1,8 +1,14 @@
-# Pokémon Crystal on an ESP32-C3 badge
+# Crystal-esp32
 
-[![Checks](https://github.com/Abish-27/esp32-crystal-badge/actions/workflows/ci.yml/badge.svg)](https://github.com/Abish-27/esp32-crystal-badge/actions/workflows/ci.yml)
+[![Checks](https://github.com/Abish-27/Crystal-esp32/actions/workflows/ci.yml/badge.svg)](https://github.com/Abish-27/Crystal-esp32/actions/workflows/ci.yml)
 
 An experiment by [Abish Kulkarni](https://github.com/Abish-27): turning a Hack the North 2026 badge into a standalone Game Boy Color handheld, with full-screen graphics, persistent saves, and game-driven RGB LEDs.
+
+<p align="center">
+  <img src="docs/images/badge-battle.png" width="480" alt="Pokémon Crystal battle running on the physical Hack the North ESP32-C3 badge">
+</p>
+
+Pokémon Crystal running on the physical badge during a battle.
 
 <p align="center">
   <img src="docs/images/title.png" width="240" alt="Crystal title screen captured from the badge framebuffer">

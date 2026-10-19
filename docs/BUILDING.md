@@ -12,8 +12,8 @@ cd esp-idf
 ./install.sh esp32c3
 . ./export.sh
 cd ..
-git clone https://github.com/Abish-27/esp32-crystal-badge.git
-cd esp32-crystal-badge
+git clone https://github.com/Abish-27/Crystal-esp32.git
+cd Crystal-esp32
 idf.py set-target esp32c3
 bash tools/build.sh
 ```
