@@ -1,0 +1,3 @@
+* text=auto eol=lf
+*.png binary
+vendor/peanut_gb.h whitespace=-space-before-tab
