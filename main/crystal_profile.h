@@ -5,6 +5,12 @@
 #define CRYSTAL_ROM_CRC32 0x3358e30au
 #define CRYSTAL_CAPTURE_ROM 0x0e9f5u
 #define CRYSTAL_CAPTURE_PC 0x69f5u
+/* First instruction after _SaveGameData returns: both game copies are complete.
+ * SaveGameData: RET; SavedTheGame: LD C,32 before the confirmation delay. */
+#define CRYSTAL_SAVE_RETURN_ROM 0x14b88u
+#define CRYSTAL_SAVE_RETURN_PC 0x4b88u
+#define CRYSTAL_SAVE_MENU_ROM 0x14be9u
+#define CRYSTAL_SAVE_MENU_PC 0x4be9u
 #define CRYSTAL_BATTLE_MODE 0xd22d
 #define CRYSTAL_BATTLE_TYPE 0xd230
 #define CRYSTAL_PLAYER_SPECIES 0xc62c

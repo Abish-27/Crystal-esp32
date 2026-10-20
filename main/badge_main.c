@@ -58,6 +58,7 @@ static const esp_partition_t *save_partition;
 static unsigned sequence;
 static int active_slot=-1;
 static int paused, render_divisor=3, scale=4, core_skip=1;
+static int speed_percent=100;
 static uint8_t injected;
 static int64_t injection_until;
 static unsigned frames_interval;
@@ -239,9 +240,9 @@ static void save_write(void) {
     reply("SAVE result=%s sequence=%u\n",esp_err_to_name(e),sequence);
 }
 static void status(void) {
-    reply("STATUS frames=%u pc=%04x errors=%u dirty=%d heap=%lu largest=%lu core=%u paused=%d render=%d scale=%d skip=%d save_seq=%u led=%u led_errors=%u profile=%d hurt=%u hit=%u caught=%u buttons=%03x\n",
+    reply("STATUS frames=%u pc=%04x errors=%u dirty=%d heap=%lu largest=%lu core=%u paused=%d render=%d scale=%d skip=%d speed=%d save_seq=%u led=%u led_errors=%u profile=%d hurt=%u hit=%u caught=%u buttons=%03x\n",
         core_frames(),core_pc(),core_errors(),core_save_dirty(),(unsigned long)esp_get_free_heap_size(),
-        (unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT),(unsigned)core_state_bytes(),paused,render_divisor,scale,core_skip,sequence,
+        (unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT),(unsigned)core_state_bytes(),paused,render_divisor,scale,core_skip,speed_percent,sequence,
         badge_led_get_level(),badge_led_errors(),battle_profile,hurt_events,hit_events,catch_events,button_stable);
 }
 static uint8_t key_name(const char *s) {
@@ -287,9 +288,16 @@ static void command(char *text) {
         if(e)badge_led_event(e);
         reply("LED_TEST pattern=%s simulated=%d\n",arg,e!=0);
     }
+    else if(!strcmp(verb,"speed")) {
+        if(!strcmp(arg,"100")||!strcmp(arg,"1")||!strcmp(arg,"1.0"))speed_percent=100;
+        else if(!strcmp(arg,"125")||!strcmp(arg,"1.25"))speed_percent=125;
+        else { reply("ERROR speed: use 100 or 125 (1x or 1.25x)\n");reply("crystal> ");return; }
+        core_set_graphics_divisor(speed_percent==125?3:2);
+        reply("OK speed=%d target_fps=%.2f\n",speed_percent,1000000.0/(1674300/speed_percent));
+    }
     else if(!strcmp(verb,"save"))save_write();
     else if(!strcmp(verb,"reset")) { save_write();esp_restart(); }
-    else reply("COMMANDS status shot pause resume press KEY [ms] hold KEY ms render 1..12 scale 1..4 skip 0|1 led 0..3 ledtest hurt|hit|catch|save save reset\n");
+    else reply("COMMANDS status shot pause resume press KEY [ms] hold KEY ms render 1..12 scale 1..4 skip 0|1 led 0..3 ledtest hurt|hit|catch|save speed 100|125 save reset\n");
     reply("crystal> ");
 }
 static void console_poll(void) {
@@ -330,6 +338,11 @@ void app_main(void) {
         /* HOME+START: explicit save and pause. HOME alone is GB Select. */
         if((raw&260)==260 && (previous&260)!=260) { save_write();paused=!paused;status(); }
         if((raw&260)==260)gameplay_buttons&=~260;
+        /* HOME+UP changes pacing only; full-screen scale is unchanged. */
+        if((raw&68)==68) {
+            gameplay_buttons&=~68;
+            if((previous&68)!=68) { speed_percent=speed_percent==100?125:100;core_set_graphics_divisor(speed_percent==125?3:2);next_frame=now;status(); }
+        }
         /* Full-screen remains fixed during normal play; scale is USB-only. */
         if((raw&36)==36) {
             gameplay_buttons&=~36;
@@ -344,7 +357,14 @@ void app_main(void) {
         if(!paused) {
             int64_t t=esp_timer_get_time();core_frame(map_buttons(gameplay_buttons)|injected);emulation_us+=esp_timer_get_time()-t;
             if(battle_profile) {
-                unsigned e=battle_fx_update(&battle_state,core_read_wram_bank)|core_take_events();
+                unsigned guest_events=core_take_events();
+                if(guest_events&CORE_EVENT_GAME_SAVED) {
+                    /* Persist before Crystal displays its saved confirmation. */
+                    reply("SAVE_GAME completed frame=%u; committing now\n",core_frames());
+                    save_write();
+                }
+                unsigned e=battle_fx_update(&battle_state,core_read_wram_bank)|
+                    (guest_events&(LED_PLAYER_HURT|LED_ENEMY_HURT|LED_CAUGHT));
                 if(e&BATTLE_PLAYER_HURT)++hurt_events;
                 if(e&BATTLE_ENEMY_HURT)++hit_events;
                 if(e&LED_CAUGHT)++catch_events;
@@ -353,7 +373,7 @@ void app_main(void) {
             ++frames_interval;
             if(core_frames()%render_divisor==0)queue_render();
             if(core_errors()) { paused=1;badge_led_event(LED_ERROR);status(); }
-            next_frame+=16743;
+            next_frame+=1674300/speed_percent;
             int64_t wait=next_frame-esp_timer_get_time();
             if(wait>1000)vTaskDelay(pdMS_TO_TICKS(wait/1000));
             /* Keep pacing debt through a slow LCD frame; cap catch-up at 100 ms. */

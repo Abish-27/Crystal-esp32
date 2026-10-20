@@ -84,7 +84,7 @@ For later code updates, use the same validation command with `--app-only`. Add `
 
 ## 5. Verify operation
 
-Check the physical display/buttons and use `python tools/console.py --port COM3 status`. Confirm full-screen scale 4, render interval 3, and no core or LED errors. Use the game's SAVE menu, then commit with HOME+START or USB `save`. Restart and verify CONTINUE before relying on persistence. Never interpret a simulated `ledtest` as proof that battle event detection works.
+Check the physical display/buttons and use `python tools/console.py --port COM3 status`. Confirm full-screen scale 4, render interval 3, startup speed 100, and no core or LED errors. The supported Crystal profile commits automatically when an in-game SAVE completes; HOME+START and USB `save` remain explicit cartridge-RAM commit tools. Restart and verify CONTINUE before relying on persistence. HOME+UP toggles normal/1.25x target speed without changing scale. Never interpret a simulated `ledtest` as proof that battle event detection works.
 
 ## Recovery reference
 

@@ -15,7 +15,7 @@ No additional audio hardware is required by this release. I2C peripherals, NFC, 
 
 `gb_core.c` wraps the vendored CGB core. ROM reads use a memory-mapped flash partition; 32 KiB cartridge RAM and a 160×144 RGB565 framebuffer live in RAM. The measured target core state occupies 128,928 bytes, excluding RTOS, DMA, and application allocations.
 
-The main task emulates frames. Every third frame it attempts to acquire a binary semaphore and copy the framebuffer into a stable snapshot. A higher-priority worker scales that snapshot and sends 16-row DMA stripes to the LCD. Requests arriving while the worker is busy are dropped. This bounds queued work and lets emulation overlap LCD transfers.
+The main task emulates frames. Normal pacing targets about 59.73 guest FPS; fast pacing targets 74.66 FPS (1.25×). HOME+UP changes pacing without changing scale. Fast mode generates graphics every third guest frame instead of every second, while CPU/timer emulation still runs every frame. Performance remains scene-dependent. Every third frame it attempts to acquire a binary semaphore and copy the framebuffer into a stable snapshot. A higher-priority worker scales that snapshot and sends 16-row DMA stripes to the LCD. Requests arriving while the worker is busy are dropped. This bounds queued work and lets emulation overlap LCD transfers.
 
 The SPI completion callback explicitly calls `portYIELD_FROM_ISR` when needed; this addressed completion latency observed with the tested SDK. Scale changes serialize with the display worker. Optional native/aspect-fit views are diagnostics; the default stretches the complete image to 320×240 without cropping.
 
@@ -23,7 +23,7 @@ The SPI completion callback explicitly calls `portYIELD_FROM_ISR` when needed; t
 
 Each 64 KiB slot contains a 32-byte header, 32 KiB cartridge RAM, and RTC metadata. A commit erases the inactive slot, writes RAM, then writes the header last. On startup, valid magic/version/size and CRC determine which slot can be loaded; the newest valid sequence wins. A previous complete slot remains available if the other slot's write is interrupted, though power-interruption fault testing has not been performed.
 
-The CRC covers the five RTC bytes followed by cartridge RAM. Dirty RAM is committed every 30 seconds; HOME+START and USB `save` request an explicit commit. The game must first write progress using its own SAVE menu. RTC advances while running, including while the emulator is paused, but not while powered off.
+The CRC covers the five RTC bytes followed by cartridge RAM. For the CRC-matched Crystal v1.1 ROM, opcode-fetch hooks at the two return sites after `_SaveGameData` completes trigger a flash commit at the end of that emulated frame, before the confirmation text. This fixes the earlier window where powering off after an in-game SAVE could discard progress before the 30-second commit. Dirty RAM is also committed every 30 seconds as a fallback; HOME+START and USB `save` request an explicit commit. The game must first write progress using its own SAVE menu. RTC advances while running, including while the emulator is paused, but not while powered off.
 
 ## LED events
 

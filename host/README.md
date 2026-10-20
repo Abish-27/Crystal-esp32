@@ -6,7 +6,7 @@ Linux, macOS with GCC/Clang, or WSL is suitable. Run from the repository root:
 bash tools/test.sh
 ```
 
-This builds a sanitizer-enabled event test and runs Python deployment tests. The default C test generates an empty test cartridge containing a minimal header and a short CPU instruction; it includes no commercial ROM. It covers HP changes, invalid snapshots, switches/fainting, WRAM banks, the opcode-fetch predicate, and rename guards. This does not prove actual game progression or hardware behavior.
+This builds a sanitizer-enabled event test and runs Python deployment tests. The default C test generates an empty test cartridge containing a minimal header and a short CPU instruction; it includes no commercial ROM. It covers HP changes, invalid snapshots, switches/fainting, WRAM banks, the opcode-fetch predicate, and rename guards. Additional sanitizer checks cover completed-save hooks (including profile/bank/fetch exclusions), one-in-three graphics generation, full CPU frame execution, and restoring normal graphics behavior. This does not prove actual game progression or hardware behavior.
 
 Optionally supply your own Crystal v1.1 ROM (SHA-1 `f2f52230b536214ef7c9924f483392993e226cfb`) to execute the event checks against its actual bytes:
 

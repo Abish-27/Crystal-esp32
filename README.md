@@ -25,7 +25,8 @@ The emulator core is an existing Peanut-GB CGB fork. This project supplies the b
 - Full-screen RGB565 graphics on the badge's ST7789 LCD.
 - Stable framebuffer snapshots and SPI DMA transfers in a separate display task.
 - D-pad, A/B, START, and HOME as Game Boy SELECT.
-- Two alternating CRC-checked cartridge-save slots, with periodic dirty-RAM commits.
+- Two alternating CRC-checked cartridge-save slots; completed in-game saves commit immediately for the supported Crystal profile.
+- HOME + UP toggles normal speed and a 1.25× target, with reduced graphics work in fast mode.
 - Dim RGB feedback for player/opponent HP loss, catches, saves, and pause.
 - USB screenshots, input injection, status, and display diagnostics.
 
@@ -64,9 +65,10 @@ bash tools/test.sh
 | HOME | Game Boy SELECT |
 | HOME + START | Commit cartridge RAM and toggle pause |
 | HOME + B | Toggle dim LEDs on/off |
+| HOME + UP | Toggle 1× / 1.25× target speed (starts at 1×) |
 | HOME + RIGHT | Cycle display request interval: 2/3/4 game frames |
 
-**Use Crystal's own SAVE menu before committing or powering off.** A cartridge-RAM commit is not an emulator save-state. Full-screen stretch is the default; size changes are USB-only.
+**Use Crystal's own SAVE menu before powering off.** For the supported ROM, completed in-game saves now commit to flash immediately. A cartridge-RAM commit is not an emulator save-state. Full-screen stretch is the default; size changes are USB-only. Fast mode generates graphics every third guest frame; achieved speed depends on the scene.
 
 ## How it fits together
 

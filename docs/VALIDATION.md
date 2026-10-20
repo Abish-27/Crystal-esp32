@@ -43,3 +43,12 @@ The hardware firmware source was copied into this repository without functional 
 - A fresh ESP-IDF v5.5.3 application build produced a 279,872-byte ESP32-C3 image, with 39% free in the app partition. Initial and app-only offline deployment validation both accepted the fresh build.
 - Tracked-file publication scan, local documentation links, and Git whitespace checks passed. Commercial ROMs, dumps, saves, raw logs, personal email, and local workstation paths are excluded.
 - No device was opened or flashed while preparing the public repository.
+
+
+## Save persistence and fast mode — 2026-10-20
+
+The earlier firmware could lose a completed in-game save if powered off before its 30-second flash commit. Completed-save hooks now commit at the end of the guest frame, before Crystal's saved confirmation, for the supported ROM profile. On the badge, an in-game save followed by a hardware reset/readback within 9.344 seconds retained the new position; both the new and previous slots had valid CRCs and game checksums, and CONTINUE restored the newer save.
+
+HOME+UP toggles 1x/1.25x; startup remains 1x. To reduce CPU load, fast mode generates graphics every third guest frame while executing all CPU frames. Outdoor intervals reached 73.78 and 74.66 emulated FPS, with about 15 completed LCD updates/sec and zero core errors. Speed remains scene-dependent. The USB speed commands were exercised; physical HOME+UP input has not been separately observed.
+
+Additional ASan/UBSan tests cover the completed-save fetch sites, profile/PC/bank exclusions, graphics scheduling, and normal-mode restoration. A fresh scripted in-game-save run triggered one completion event with no core errors. The final device application built to 280,576 bytes and was deployed app-only, preserving ROM and game-save ranges. Private dumps and saves are not distributed.

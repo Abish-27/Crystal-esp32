@@ -6,6 +6,7 @@
 - Revision: `23c66f09bd102120537d4607a2464515b2f0c384`
 - License: GNU GPL version 3; the license text is included in `LICENSE`.
 - The LCD initialization and button wiring in `main/badge_main.c` were adapted from the official firmware. This is a modified standalone integration dated 2026-10-18, with emulator scheduling, asynchronous display transfer, saves, USB diagnostics, and LED feedback. It does not include the original launcher or its application suite.
+- Further project changes dated 2026-10-20 add completed-game-save flash commits and normal/1.25x pacing with reduced graphics work in fast mode.
 - Upstream contributors retain copyright in their original work.
 
 ## Peanut-GB CGB fork

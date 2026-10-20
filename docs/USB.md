@@ -22,6 +22,7 @@ On Linux, substitute a device such as `/dev/ttyACM0`. The console uses 115200 ba
 | `skip 0\|1` | Core graphics frame skipping |
 | `led 0..3` | Off / very dim / default / brighter |
 | `ledtest hurt\|hit\|catch\|save` | Simulated pattern, not evidence of a game event |
+| `speed 100`, `speed 125` | Normal / 1.25× target; `speed 1.25` also works |
 | `save` | Commit cartridge RAM and RTC |
 | `reset` | Commit, then restart |
 | `name NAME` | Early-game diagnostic rename, letters only, at most seven characters |
